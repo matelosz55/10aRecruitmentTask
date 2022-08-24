@@ -1,42 +1,51 @@
 package pl.recruitmenttask.controller;
 
+import com.google.gson.Gson;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import pl.recruitmenttask.model.Album;
 import pl.recruitmenttask.model.Artist;
 import pl.recruitmenttask.repository.AlbumRepository;
+import pl.recruitmenttask.repository.ArtistRepository;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
 @Controller
-@RequestMapping("/album")
+@RequestMapping(value = "/album", produces = "application/json")
 public class AlbumController {
     private final AlbumRepository albumRepository;
+    private final ArtistRepository artistRepository;
 
-    public AlbumController(AlbumRepository albumRepository) {
+    public AlbumController(AlbumRepository albumRepository, ArtistRepository artistRepository) {
         this.albumRepository = albumRepository;
+        this.artistRepository = artistRepository;
     }
 
     @GetMapping("/all")
-    public String showPosts(Model model) {
+    @ResponseBody
+    public ResponseEntity showAlbums() {
         List<Album> albums = albumRepository.findAll();
-        model.addAttribute("albums", albums);
-        return "/albums/all";
+        String jsonAlbums = new Gson().toJson(albums);
+        return new ResponseEntity(jsonAlbums, HttpStatus.OK);
     }
 
     @GetMapping("/save")
+    @Transactional
     public String save(Model model){
-        model.addAttribute("albums",new Album());
+        List<Artist> artists = artistRepository.findAll();
+        model.addAttribute("artist",artists);
+        model.addAttribute("album",new Album());
         return "/albums/save";
     }
 
     @PostMapping("/save")
+    @Transactional
     public String getForm(@Valid final Album albums, final BindingResult validationResult){
         if(validationResult.hasErrors()){
             return "/albums/save";
@@ -45,13 +54,6 @@ public class AlbumController {
         return "redirect:all";
     }
 
-    @GetMapping("delete/{id}")
-    public String delete(Model model, @PathVariable long id){
-        albumRepository.deleteById(id);
-        List<Album> albums = albumRepository.findAll();
-        model.addAttribute("album",albums);
-        return "/albums/all";
-    }
 
     @GetMapping("/update/{id}")
     public String editById(@PathVariable long id, Model model){

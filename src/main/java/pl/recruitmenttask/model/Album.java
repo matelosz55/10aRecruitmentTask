@@ -1,5 +1,6 @@
 package pl.recruitmenttask.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.hibernate.annotations.Formula;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,14 +21,13 @@ public class Album {
     @ManyToOne
     @NotNull(message = "Insert artist")
     private Artist artist;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @NotNull(message = "Set release date")
-    private LocalDate releaseDate;
+    private String releaseDate;
     private String comments;
     private Integer numberOfTracks;
 
 
-    public Album(long id, String title, Artist artist, LocalDate releaseDate, String comments, Integer numberOfTracks) {
+    public Album(long id, String title, Artist artist, String releaseDate, String comments, Integer numberOfTracks) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -63,11 +63,11 @@ public class Album {
         this.artist = artist;
     }
 
-    public LocalDate getReleaseDate() {
+    public String getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(LocalDate releaseDate) {
+    public void setReleaseDate(String releaseDate) {
         this.releaseDate = releaseDate;
     }
 

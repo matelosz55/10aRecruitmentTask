@@ -35,7 +35,7 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public LocalEntityManagerFactoryBean entityManagerFactory() {
         LocalEntityManagerFactoryBean emfb = new LocalEntityManagerFactoryBean();
-        emfb.setPersistenceUnitName("MusicTool");
+        emfb.setPersistenceUnitName("10aRecruitmentTask");
         return emfb;
     }
 

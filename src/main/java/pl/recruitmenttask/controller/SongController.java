@@ -1,13 +1,14 @@
 package pl.recruitmenttask.controller;
 
+import com.google.gson.Gson;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import pl.recruitmenttask.model.Album;
+import pl.recruitmenttask.model.Artist;
 import pl.recruitmenttask.model.Song;
 import pl.recruitmenttask.repository.SongRepository;
 
@@ -24,10 +25,11 @@ public class SongController {
     }
 
     @GetMapping("/all")
-    public String showPosts(Model model) {
+    @ResponseBody
+    public ResponseEntity showSongs() {
         List<Song> songs = songRepository.findAll();
-        model.addAttribute("songs", songs);
-        return "/songs/all";
+        String jsonSongs = new Gson().toJson(songs);
+        return new ResponseEntity(jsonSongs, HttpStatus.OK);
     }
 
     @GetMapping("/save")
@@ -45,13 +47,6 @@ public class SongController {
         return "redirect:all";
     }
 
-    @GetMapping("delete/{id}")
-    public String delete(Model model, @PathVariable long id){
-        songRepository.deleteById(id);
-        List<Song> songs = songRepository.findAll();
-        model.addAttribute("song",songs);
-        return "/songs/all";
-    }
 
     @GetMapping("/update/{id}")
     public String editById(@PathVariable long id, Model model){
